@@ -1,42 +1,32 @@
 <template>
-  <div id="dashboard-mhs">
+  <div id="view-inventory">
     <ul class="collection with-header">
       <li class="collection-header">
-        <router-link v-bind:to="{name:'input-complaint',params: {nim: this.$route.params.nim}}" class="btn blue right"> <i class="fa fa-plus"></i></router-link>
+          <router-link v-bind:to="{name:'input-complaint', params:{nim: this.$route.params.nim}}" class="btn grey">Back</router-link>
         <div class="center">
           <h4>
-            MyComplaints
+            Inventaris
           </h4>
         </div>
       </li>
       <table class="responsive-table">
       <thead>
         <tr>
-          <th>NIM</th>
-          <th>Nama</th>
-          <th>Ruangan</th>
-          <th>Inventaris</th>
           <th>Kode Inventaris</th>
+          <th>Kategori</th>
+          <th>Ruangan</th>
+          <th>Nama</th>
           <th>Status</th>
-          <th>Tanggal Komplain</th>
-          <th class="center">Aksi</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="c in mhs" v-bind:key="c.tanggal">
-          <td>{{c.nim}}</td>
-          <td>{{c.nama}}</td>
-          <td>{{c.selectedRoom}}</td>
-          <td>{{c.checkedInventory}}</td>
-          <td>{{c.kode_inventaris}}</td>
-          <td>{{c.status}}</td>
-          <td>{{Date(c.tanggal)}}</td>
-        <td>
-          <router-link class="secondary-content" v-bind:to="{name:'view-complaint',params: {id: c.id}}">
-            <i class="fa fa-eye">Detail</i>
-          </router-link>
-        </td>
+        <tr v-for="i in inventaris" v-bind:key="i.id">
+          <td>{{i.id}}</td>
+          <td>{{i.kategori}}</td>
+          <td>{{i.lab}}</td>
+          <td>{{i.nama_inventaris}}</td>
+          <td>{{i.status}}</td>
         </tr>
       </tbody>
     </table>
@@ -47,7 +37,7 @@
       <thead>
         <tr>
           <th>Ruangan</th>
-          <th>Inventaris</th>
+          <th>Kategori</th>
           <th>Status</th>
           <th>Reset</th>
         </tr>
@@ -69,11 +59,11 @@
 import db from './firebaseInit'
 import firebase from 'firebase'
 export default {
-    name: 'dashboard-mhs',
+    name: 'view-inventory',
     data(){
         return{
-           mhs: [],
-            sort_ruangan:null,
+           inventaris: [],
+            sort_ruangan:this.$route.params.sort_ruangan,
             sort_inventaris:null,
             sort_status:null,
             dropdown_ruangan:[
@@ -82,8 +72,8 @@ export default {
               'IFLAB 3',
               'IFLAB 4',
               'IFLAB 5',
-              'IKLAB 1',
-              'IKLAB 2'
+              'ITLAB 1',
+              'ITLAB 2'
             ],
             dropdown_inventaris:[
               'PC, Monitor, Keyboard, Mouse', 
@@ -92,19 +82,18 @@ export default {
               'Elektronik: Air Conditioner (AC)'
             ],
             dropdown_status:[
-              'close','open'
+              'Baik','Rusak', 'Out'
             ],
             headers: [
                 {
-                    text: "NIM",
+                    text: "Kode Inventaris",
                     align: 'left',
                     sortable: false,
-                    value: 'nim'
+                    value: 'id'
                 },
+                {text: 'Kategori', value:'kategori'},
+                {text: 'Ruangan', value:'ruangan'},
                 {text: 'Nama', value:'nama'},
-                {text: 'Ruangan', value:'selectedRoom'},
-                {text: 'Inventaris', value:'checkedInventory'},
-                {text: 'Kode Inventaris: ', value:'kode_inventaris'},
                 {text: 'Status: ', value:'status'},
                 {text: 'Aksi', value: 'id', sortable: false}
             ]
@@ -114,38 +103,38 @@ export default {
       sort_ruangan(sort_ruangan){
         switch(sort_ruangan){
           case 'IFLAB 1':
-            this.mhs = this.mhs.filter(data =>
-              sort_ruangan.includes(data.selectedRoom)
+            this.inventaris = this.inventaris.filter(data =>
+              sort_ruangan.includes(data.lab)
             )
             break
           case 'IFLAB 2':
-            this.mhs = this.mhs.filter(data =>
-              sort_ruangan.includes(data.selectedRoom)
+            this.inventaris = this.inventaris.filter(data =>
+              sort_ruangan.includes(data.lab)
             )
             break
           case 'IFLAB 3':
-            this.mhs = this.mhs.filter(data =>
-              sort_ruangan.includes(data.selectedRoom)
+            this.inventaris = this.inventaris.filter(data =>
+              sort_ruangan.includes(data.lab)
             )
             break
           case 'IFLAB 4':
-            this.mhs = this.mhs.filter(data =>
-              sort_ruangan.includes(data.selectedRoom)
+            this.inventaris = this.inventaris.filter(data =>
+              sort_ruangan.includes(data.lab)
             )
             break
           case 'IFLAB 5':
-            this.mhs = this.mhs.filter(data =>
-              sort_ruangan.includes(data.selectedRoom)
+            this.inventaris = this.inventaris.filter(data =>
+              sort_ruangan.includes(data.lab)
             )
             break
-          case 'IKLAB 1':
-            this.mhs = this.mhs.filter(data =>
-              sort_ruangan.includes(data.selectedRoom)
+          case 'ITLAB 1':
+            this.inventaris = this.inventaris.filter(data =>
+              sort_ruangan.includes(data.lab)
             )
            break
-          case 'IKLAB 2':
-            this.mhs = this.mhs.filter(data =>
-              sort_ruangan.includes(data.selectedRoom)
+          case 'ITLAB 2':
+            this.inventaris = this.inventaris.filter(data =>
+              sort_ruangan.includes(data.lab)
             )
             break
 
@@ -156,23 +145,23 @@ export default {
       sort_inventaris(sort_inventaris){
         switch(sort_inventaris){
           case 'PC, Monitor, Keyboard, Mouse':
-          this.mhs = this.mhs.filter(data =>
-            sort_inventaris.includes(data.checkedInventory)
+          this.inventaris = this.inventaris.filter(data =>
+            sort_inventaris.includes(data.kategori)
           )
           break 
           case 'Mebel: Meja dan Kursi':
-          this.mhs = this.mhs.filter(data =>
-            sort_inventaris.includes(data.checkedInventory)
+          this.inventaris = this.inventaris.filter(data =>
+            sort_inventaris.includes(data.kategori)
           )
           break
           case 'Periferal: Proyektor dan Layar':
-          this.mhs = this.mhs.filter(data =>
-            sort_inventaris.includes(data.checkedInventory)
+          this.inventaris = this.inventaris.filter(data =>
+            sort_inventaris.includes(data.kategori)
           )
           break
           case 'Elektronik: Air Conditioner (AC)':
-          this.mhs = this.mhs.filter(data =>
-            sort_inventaris.includes(data.checkedInventory)
+          this.inventaris = this.inventaris.filter(data =>
+            sort_inventaris.includes(data.kategori)
           )
           break
 
@@ -183,12 +172,12 @@ export default {
       sort_status(sort_status){
         switch(sort_status){
           case 'open':
-            this.mhs = this.mhs.filter(data => 
+            this.inventaris = this.inventaris.filter(data => 
               sort_status.includes(data.status)
           )
           break
           case 'close':
-            this.mhs = this.mhs.filter(data => 
+            this.inventaris = this.inventaris.filter(data => 
               sort_status.includes(data.status)
           )
           break
@@ -201,7 +190,6 @@ export default {
     created(){
         this.initialize()
     },
-
     methods:{
       refresh() {
         ;(this.sort_ruangan = null),
@@ -209,28 +197,22 @@ export default {
           (this.sort_status = null),
           this.initialize()
         },
-      
-      initialize(){
-        db.complaintFirestore.collection('complaint')
-        .where('nim','==',this.$route.params.nim)
-        .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            const data = {
-                id: doc.data().id,
-                nim: doc.data().nim,
-                nama: doc.data().nama,
-                selectedRoom: doc.data().selectedRoom,
-                checkedInventory: doc.data().checkedInventory,
-                kode_inventaris: doc.data().kode_inventaris,
-                status: doc.data().status,
-                tanggal: doc.data().tanggal
-            }
-            this.mhs.push(data)
-          })
-        })
-      },
-
+        initialize(){
+            db.inventoryFirestore.collection('inventory')
+            .get()
+            .then(querySnapshot =>{
+                querySnapshot.forEach(doc =>{
+                    const data={
+                        id: doc.data().id,
+                        kategori: doc.data().kategori,
+                        lab: doc.data().lab,
+                        nama_inventaris: doc.data().nama,
+                        status: doc.data().status
+                    }
+                    this.inventaris.push(data)
+                })
+            })
+        }
     }
 }
 </script>

@@ -2,7 +2,6 @@
   <div id="dashboard-complaint">
     <ul class="collection with-header">
       <li class="collection-header">
-        <router-link to='/' class="btn grey left"> Logout </router-link>
         <div class="center">
           <h4>
             Complaints
@@ -18,18 +17,20 @@
           <th>Inventaris</th>
           <th>Kode Inventaris</th>
           <th>Status</th>
+          <th>Tanggal Komplain</th>
           <th class="center">Aksi</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="c in complaints" v-bind:key="c.nim">
+        <tr v-for="c in complaints" v-bind:key="c.id">
           <td>{{c.nim}}</td>
           <td>{{c.nama}}</td>
           <td>{{c.selectedRoom}}</td>
           <td>{{c.checkedInventory}}</td>
           <td>{{c.kode_inventaris}}</td>
           <td>{{c.status}}</td>
+          <td>{{Date(c.tanggal)}}</td>
         <td>
           <router-link class="secondary-content" v-bind:to="{name:'view-detail-complaint',params: {id: c.id}}">
             <a class="waves-effect waves-light btn blue white-text">Detail</a>
@@ -65,6 +66,7 @@
 
 <script>
 import db from './firebaseInit'
+import firebase from 'firebase'
 export default {
     name: 'dashboard-complaint',
     data(){
@@ -110,37 +112,37 @@ export default {
     watch:{
       sort_ruangan(sort_ruangan){
         switch(sort_ruangan){
-          case 'IFLAB1':
+          case 'IFLAB 1':
             this.complaints = this.complaints.filter(data =>
               sort_ruangan.includes(data.selectedRoom)
             )
             break
-          case 'IFLAB2':
+          case 'IFLAB 2':
             this.complaints = this.complaints.filter(data =>
               sort_ruangan.includes(data.selectedRoom)
             )
             break
-          case 'IFLAB3':
+          case 'IFLAB 3':
             this.complaints = this.complaints.filter(data =>
               sort_ruangan.includes(data.selectedRoom)
             )
             break
-          case 'IFLAB4':
+          case 'IFLAB 4':
             this.complaints = this.complaints.filter(data =>
               sort_ruangan.includes(data.selectedRoom)
             )
             break
-          case 'IFLAB5':
+          case 'IFLAB 5':
             this.complaints = this.complaints.filter(data =>
               sort_ruangan.includes(data.selectedRoom)
             )
             break
-          case 'IKLAB1':
+          case 'IKLAB 1':
             this.complaints = this.complaints.filter(data =>
               sort_ruangan.includes(data.selectedRoom)
             )
            break
-          case 'IKLAB2':
+          case 'IKLAB 2':
             this.complaints = this.complaints.filter(data =>
               sort_ruangan.includes(data.selectedRoom)
             )
@@ -208,7 +210,7 @@ export default {
         },
       
       initialize(){
-        db.collection('complaint')
+        db.complaintFirestore.collection('complaint')
         .orderBy('nim')
         .get()
         .then(querySnapshot => {
@@ -220,7 +222,8 @@ export default {
                 selectedRoom: doc.data().selectedRoom,
                 checkedInventory: doc.data().checkedInventory,
                 kode_inventaris: doc.data().kode_inventaris,
-                status: doc.data().status
+                status: doc.data().status,
+                tanggal: doc.data().tanggal
             }
             this.complaints.push(data)
           })

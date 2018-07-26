@@ -18,7 +18,7 @@
         <v-text-field value="nim" v-model="nama" readonly></v-text-field>
 
         <span> Tanggal Komplain: </span>
-        <v-text-field value="tanggal" v-model="tanggal" class="date" readonly></v-text-field>
+        <v-text-field value="tanggal" v-model="tanggal"  readonly></v-text-field>
     
         <span> Ruangan: </span>
         <v-text-field value="selectedRoom" v-model="selectedRoom" readonly></v-text-field>
@@ -61,11 +61,11 @@ export default {
             reply: 'empty',
             reply_mahasiswa:'empty',
             status:'',
-            tanggal: new Date()
+            tanggal: Date()
         }
     },
     beforeRouteEnter(to,from,next){
-            db
+            db.complaintFirestore
                 .collection('complaint')
                 .where('id','==',to.params.id)
                 .get()
@@ -90,7 +90,7 @@ export default {
     },
     methods:{
         fetchData(){
-            db
+            db.complaintFirestore
                 .collection('complaint')
                 .where('id','==',to.params.id)
                 .get()

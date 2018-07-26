@@ -83,7 +83,7 @@ export default {
         }
     },
     created(){
-        db
+        db.complaintFirestore
             .collection('conversations')
             .where('id_complaint','==',this.$route.params.id_complaint)
             .orderBy("created")
@@ -107,7 +107,7 @@ export default {
             })
     },
     beforeRouteEnter(to,from,next){
-        db
+        db.complaintFirestore
             .collection('complaint')
             .where('id','==',to.params.id_complaint)
             .get()
@@ -126,7 +126,7 @@ export default {
     },
     watch :{
         fetchData(){
-            db
+            db.complaintFirestore
                 .collection('complaint')
                 .where('id', '==', this.$route.params.id_complaint)
                 .get()
@@ -144,7 +144,7 @@ export default {
     },
     methods:{
         getReply(){
-            db
+            db.complaintFirestore
             .collection('conversations')
             .where('id_complaint','==',this.$route.params.id_complaint)
             .orderBy("created")
@@ -161,7 +161,7 @@ export default {
                         this.reply = doc.data().messages[0].reply
                         this.to = doc.data().messages[0].to
                         this.from = doc.data().messages[0].from
-                        db.collection('conversations').doc(this.id_reply).set({
+                        db.complaintFirestore.collection('conversations').doc(this.id_reply).set({
                             created: this.created,
                             id_complaint:this.id_complaint,
                             messages:[

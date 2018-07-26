@@ -5,12 +5,14 @@ import App from './App'
 import router from './router'
 import Vuetify from 'vuetify'
 import vSelect from 'vue-select'
+import firebase from 'firebase'
+import './components/firebaseInit'
 
 Vue.config.productionTip = false
 
 Vue.use(Vuetify)
 Vue.component('v-select',vSelect)
-/* eslint-disable no-new */
+
 new Vue({
   el: '#app',
   router,

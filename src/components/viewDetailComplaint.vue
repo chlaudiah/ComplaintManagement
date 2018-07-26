@@ -18,7 +18,7 @@
         <v-text-field value="nim" v-model="nama" readonly></v-text-field>
 
         <span> Tanggal Komplain: </span>
-        <v-text-field value="tanggal" v-model="tanggal" class="date" readonly></v-text-field>
+        <v-text-field value="tanggal" v-model="tanggal" readonly></v-text-field>
     
         <span> Ruangan: </span>
         <v-text-field value="selectedRoom" v-model="selectedRoom" readonly></v-text-field>
@@ -69,11 +69,11 @@ export default {
             reply: 'empty',
             reply_mahasiswa:'empty',
             status:'',
-            tanggal: new Date()
+            tanggal: Date()
         }
     },
     beforeRouteEnter(to,from,next){
-            db
+            db.complaintFirestore
                 .collection('complaint')
                 .where('id','==',to.params.id)
                 .get()
@@ -98,7 +98,7 @@ export default {
     },
     methods:{
         fetchData(){
-            db
+            db.complaintFirestore
                 .collection('complaint')
                 .where('id','==',this.$route.params.id)
                 .get()
@@ -118,35 +118,35 @@ export default {
         },
         updateStatus(){
             this.status="close"
-            db
+            db.complaintFirestore
                 .collection('complaint')
                 .doc(this.$route.params.id)
                 .update({status: 'close'})
         },
         reopen(){
             this.status="open"
-            db
+            db.complaintFirestore
                 .collection('complaint')
                 .doc(this.$route.params.id)
                 .update({status: 'open'})
         },
         deleteComplaint(){
-            db.collection('complaint')
+            db.complaintFirestore.collection('complaint')
             .where('id','==',this.$route.params.id)
             .get()
             .then(querySnapshot =>{
                 querySnapshot.forEach(doc => {
                     doc.ref.delete()
-                })
-            })
-
-            db.collection('conversations')
-            .where('id_complaint','==',this.$route.params.id)
-            .get()
-            .then(Snapshot =>{
-                Snapshot.forEach(data =>{
-                    data.ref.delete()
-                    alert("Data berhasil dihapus. Back untuk kembali ke dashboard")
+                    db.complaintFirestore.collection('conversations')
+                    .where('id_complaint','==',this.$route.params.id)
+                    .get()
+                    .then(Snapshot =>{
+                        Snapshot.forEach(data =>{
+                            data.ref.delete()
+                            alert("Data berhasil dihapus")
+                            this.$router.push('/dashboard')
+                        })
+                    })
                 })
             })
         }
